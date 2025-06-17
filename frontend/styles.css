@@ -1,0 +1,158 @@
+/* General Styles */
+body {
+  font-family: 'Roboto', Arial, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Auth Section */
+h2 {
+  font-size: 1.8rem;
+  font-weight: 500;
+  text-align: center;
+  color: #495057;
+}
+
+form {
+  margin-top: 1rem;
+}
+
+form .form-control {
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+form .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.2);
+}
+
+form button {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+form .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+form .btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}
+
+form .btn-link {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+form .btn-link:hover {
+  text-decoration: underline;
+}
+
+/* App Section */
+#logout-btn {
+  display: block;
+  margin: 0 auto 1rem;
+  background-color: #e63946;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+#logout-btn:hover {
+  background-color: #a62630;
+}
+
+#calendar {
+  margin-top: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  padding: 1rem;
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal */
+.modal-content {
+  border-radius: 12px;
+}
+
+.modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.modal-footer .btn {
+  padding: 10px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+}
+
+.modal-footer .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.modal-footer .btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.modal-footer .btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.modal-footer .btn-secondary:hover {
+  background-color: #545b62;
+}
+
+/* Checkbox and Select */
+#eventForm input[type="checkbox"] {
+  transform: scale(1.2);
+  margin-right: 8px;
+}
+
+#eventForm select {
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 1rem;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+}
