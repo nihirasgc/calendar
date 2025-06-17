@@ -16,6 +16,59 @@ document.addEventListener('DOMContentLoaded', () => {
   const eventForm = document.getElementById('eventForm');
   const saveEventBtn = document.getElementById('saveEventBtn');
   const deleteEventBtn = document.getElementById('deleteEventBtn');
+const filterBtn = document.getElementById('filter-btn');
+const filterTagInput = document.getElementById('filter-tag');
+
+const filterEventsByTag = async (tag) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/events?tags=${tag}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) throw new Error('Failed to fetch filtered events');
+
+    const events = await response.json();
+
+    // Update the calendar with the filtered events
+    const formattedEvents = events.map(event => ({
+      id: event._id,
+      title: event.title,
+      start: event.startDate,
+      end: event.endDate || null,
+      allDay: event.isAllDay,
+      extendedProps: {
+        description: event.description || '',
+        location: event.location || '',
+        calendarId: event.calendarId,
+        ownerId: event.ownerId,
+        recurrenceRule: event.recurrenceRule || '',
+        recurrenceExceptions: event.recurrenceExceptions || [],
+        status: event.status || 'confirmed',
+        attendees: event.attendees || [],
+        tags: event.tags || [],
+      },
+    }));
+
+    calendar.removeAllEvents(); // Clear existing events
+    calendar.addEventSource(formattedEvents); // Add filtered events
+  } catch (error) {
+    console.error('Error filtering events:', error);
+  }
+};
+
+// Add event listener for the filter button
+filterBtn.addEventListener('click', () => {
+  const tag = filterTagInput.value.trim();
+  if (tag) {
+    filterEventsByTag(tag);
+  } else {
+    alert('Please enter a tag to filter');
+  }
+});
+
 
   let token = localStorage.getItem('token');
   let calendar = null;
@@ -33,95 +86,97 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Initialize the FullCalendar instance
-const initializeCalendar = () => {
-  calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'dayGridMonth',
-    editable: true,
-    selectable: true,
-    timeZone: 'local',
-    eventTimeFormat: {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    },
-    events: async (info, successCallback, failureCallback) => {
-      try {
-        const year = info.start.getFullYear();
-        const month = info.start.getMonth() + 1; // FullCalendar uses 0-based months
+  const initializeCalendar = () => {
+    calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      editable: true,
+      selectable: true,
+      timeZone: 'local',
+      eventTimeFormat: {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      },
+      events: async (info, successCallback, failureCallback) => {
+        try {
+          const year = info.start.getFullYear();
+          const month = info.start.getMonth() + 1;
 
-        const response = await fetch(`${API_BASE_URL}/events/month/${year}/${month}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+          const response = await fetch(`${API_BASE_URL}/events/month/${year}/${month}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
 
-        if (!response.ok) throw new Error('Failed to fetch events');
+          if (!response.ok) throw new Error('Failed to fetch events');
 
-        const events = await response.json();
+          const events = await response.json();
 
-        const formattedEvents = events.map(event => ({
-          id: event._id,
-          title: event.title,
-          start: event.startDate,
-          end: event.endDate || null,
-          allDay: event.isAllDay,
-          extendedProps: {
-            description: event.description || '',
-            location: event.location || '',
-            calendarId: event.calendarId,
-            ownerId: event.ownerId,
-            recurrenceRule: event.recurrenceRule || '',
-            recurrenceExceptions: event.recurrenceExceptions || [],
-            status: event.status || 'confirmed',
-            attendees: event.attendees || [],
-          },
-        }));
+          const formattedEvents = events.map(event => ({
+            id: event._id,
+            title: event.title,
+            start: event.startDate,
+            end: event.endDate || null,
+            allDay: event.isAllDay,
+            extendedProps: {
+              description: event.description || '',
+              location: event.location || '',
+              calendarId: event.calendarId,
+              ownerId: event.ownerId,
+              recurrenceRule: event.recurrenceRule || '',
+              recurrenceExceptions: event.recurrenceExceptions || [],
+              status: event.status || 'confirmed',
+              attendees: event.attendees || [],
+              tags: event.tags || [],
+            },
+          }));
 
-        successCallback(formattedEvents);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        failureCallback(error);
-      }
-    },
-    eventClick: (info) => {
-      const { extendedProps, id, start, end } = info.event;
-      const eventData = {
-        id,
-        title: info.event.title,
-        startDate: start.toISOString().slice(0, 16),
-        endDate: end ? end.toISOString().slice(0, 16) : '',
-        description: extendedProps.description,
-        location: extendedProps.location,
-        calendarId: extendedProps.calendarId,
-        ownerId: extendedProps.ownerId,
-        isAllDay: info.event.allDay,
-        recurrenceRule: extendedProps.recurrenceRule,
-        recurrenceExceptions: extendedProps.recurrenceExceptions,
-        status: extendedProps.status,
-        attendees: extendedProps.attendees.join(', '),
-      };
-      showEventModal(eventData, id);
-    },
-    dateClick: (info) => {
-      const newEventData = {
-        title: '',
-        startDate: info.dateStr,
-        endDate: info.dateStr,
-        description: '',
-        location: '',
-        calendarId: '',
-        ownerId: '',
-        isAllDay: false,
-        recurrenceRule: '',
-        recurrenceExceptions: '',
-        status: 'confirmed',
-        attendees: '',
-      };
-      showEventModal(newEventData, null);
-    },
-  });
+          successCallback(formattedEvents);
+        } catch (error) {
+          console.error('Error fetching events:', error);
+          failureCallback(error);
+        }
+      },
+      eventClick: (info) => {
+        const { extendedProps, id, start, end } = info.event;
+        const eventData = {
+          id,
+          title: info.event.title,
+          startDate: start.toISOString().slice(0, 16),
+          endDate: end ? end.toISOString().slice(0, 16) : '',
+          description: extendedProps.description,
+          location: extendedProps.location,
+          calendarId: extendedProps.calendarId,
+          ownerId: extendedProps.ownerId,
+          isAllDay: info.event.allDay,
+          recurrenceRule: extendedProps.recurrenceRule,
+          recurrenceExceptions: extendedProps.recurrenceExceptions,
+          status: extendedProps.status,
+          attendees: extendedProps.attendees.join(', '),
+          tags: extendedProps.tags.join(', '),
+        };
+        showEventModal(eventData, id);
+      },
+      dateClick: (info) => {
+        const newEventData = {
+          title: '',
+          startDate: info.dateStr,
+          endDate: info.dateStr,
+          description: '',
+          location: '',
+          calendarId: '',
+          ownerId: '',
+          isAllDay: false,
+          recurrenceRule: '',
+          recurrenceExceptions: '',
+          status: 'confirmed',
+          attendees: '',
+          tags: '',
+        };
+        showEventModal(newEventData, null);
+      },
+    });
 
-  calendar.render();
-};
-
+    calendar.render();
+  };
 
   // Show the modal for creating or editing an event
   const showEventModal = (event = {}, eventId = null) => {
@@ -171,6 +226,7 @@ const initializeCalendar = () => {
     formData.endDate = endDate ? endDate.toISOString() : null;
     formData.isAllDay = formData.isAllDay === 'on';
     formData.attendees = formData.attendees.split(',').map(email => email.trim());
+    formData.tags = formData.tags.split(',').map(tag => tag.trim()); // Process tags
 
     try {
       const response = await fetch(
@@ -241,7 +297,7 @@ const initializeCalendar = () => {
 
   const fetchEventsByMonth = async (year, month) => {
   try {
-    const response = await fetch(`${apiBase}/events/month/${year}/${month}`, {
+    const response = await fetch(`${API_BASE_URL}/events/month/${year}/${month}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

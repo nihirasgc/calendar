@@ -51,6 +51,11 @@
   <!-- Application Container -->
   <div id="app-container" class="container mt-5" style="display: none;">
     <button id="logout-btn" class="btn btn-danger mb-3">Logout</button>
+   <!-- Filter Section -->
+    <div id="filter-container" class="mb-3">
+      <input id="filter-tag" type="text" class="form-control" placeholder="Enter tag to filter (e.g., work)" />
+      <button id="filter-btn" class="btn btn-primary mt-2">Filter Events</button>
+    </div>
     <div id="calendar"></div>
   </div>
 
@@ -107,6 +112,14 @@
             <div class="mb-3">
               <label for="attendees" class="form-label">Attendees</label>
               <input type="text" class="form-control" id="attendees" name="attendees" placeholder="Comma-separated emails or IDs">
+            </div>
+            <div class="mb-3">
+              <label for="tags" class="form-label">Tags</label>
+              <select class="form-control" id="tags" name="tags">
+                <option value="">Select a Tag</option>
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+              </select>
             </div>
           </form>
         </div>
